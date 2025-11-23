@@ -1,39 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Thank You</title>
-<style>
-body{
-    font-family: Arial;
-    background: #eef2ff;
-    text-align: center;
-}
-.box{
-    margin-top: 120px;
-}
-button{
-    margin-top: 20px;
-    padding: 12px 30px;
-    background: #2D89EF;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-button:hover{
-    background: #1b5cb8;
-}
-h1{
-    font-size: 42px;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DairyFresh • Thank You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fbfbfb; --accent:#0b1320; --muted:#7b7b85; --card:#fff; --glass:rgba(11,19,32,0.05)}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial;}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f6f7f8);color:var(--accent);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .card{background:var(--card);padding:36px;border-radius:14px;box-shadow:0 20px 50px var(--glass);max-width:680px;text-align:center}
+    h1{margin:0;font-size:32px}
+    p{color:var(--muted)}
+    .btn{margin-top:20px;padding:12px 18px;border-radius:10px;border:none;background:#0b7a66;color:white;cursor:pointer;font-weight:700;text-decoration:none}
+    .order{margin-top:20px;text-align:left;background:#fbfbfb;padding:14px;border-radius:10px}
+    .muted{color:var(--muted)}
+  </style>
 </head>
-
 <body>
-<div class="box">
-    <h1>Thank You!</h1>
-    <p>Your payment was successful.</p>
-    <a href="index.html"><button>Back to Home</button></a>
-</div>
+  <div class="card">
+    <h1>Thank you — your order is placed!</h1>
+    <p class="muted" id="sub">We have received your payment and are processing your order.</p>
+
+    <div id="order" class="order"></div>
+
+    <a class="btn" id="homeBtn" href="index.html">Back to home</a>
+  </div>
+
+<script>
+/* Display last order summary saved by payment page */
+(function(){
+  const el = document.getElementById('order');
+  const last = JSON.parse(localStorage.getItem('df_last_order')||'null');
+  if(!last){
+    el.innerHTML = '<div class="muted">No order details available.</div>';
+    return;
+  }
+  let html = `<div style="font-weight:700">Order ID: ${last.id}</div>`;
+  html += `<div class="muted" style="margin-bottom:8px">Placed: ${new Date(last.ts).toLocaleString()}</div>`;
+  last.items.forEach(it=>{
+    html += `<div style="display:flex;justify-content:space-between;padding:6px 0"><div>${it.title} <span class="muted">x${it.qty||1}</span></div><div>₹${(it.price*(it.qty||1)).toFixed(0)}</div></div>`;
+  });
+  html += `<div style="border-top:1px dashed rgba(11,19,32,0.06);margin-top:8px;padding-top:8px;font-weight:700;display:flex;justify-content:space-between">Total<div>₹${last.total.toFixed(0)}</div></div>`;
+  el.innerHTML = html;
+  // ensure main cart badge is cleared
+  const badge = document.getElementById('badge') || document.querySelector('#badge');
+  if(badge) badge.textContent = 0;
+})();
+</script>
 </body>
 </html>
